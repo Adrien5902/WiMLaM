@@ -51,7 +51,7 @@ jobs:
           copy target/$target/release/$name.exe dist/$name-$target.exe
 
           Compress-Archive `
-            dist/$name.exe `
+            dist/$name-$target.exe `
             dist/$name-$target.zip `
             -Force
 
