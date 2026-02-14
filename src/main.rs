@@ -24,7 +24,7 @@ pub const SYS_SPECIFCS: Lazy<RefreshKind> = Lazy::new(|| {
 
 fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
-    let headless = args.contains(&String::from("--headless"));
+    let headless = args.contains(&String::from(App::HEADLESS_ARG));
 
     let monitors = Monitor::get_monitors();
     let presets: Vec<Arc<Mutex<Preset>>> = Preset::read()?

@@ -22,6 +22,7 @@ use ratatui::{
     style::{Color, Style, Stylize},
     widgets::{Paragraph, Widget},
 };
+use std::fs;
 use std::process::{Command, Stdio};
 use std::sync::{Arc, Mutex};
 use windows::Win32::Foundation::HANDLE;
@@ -58,6 +59,8 @@ const SELECTED_STYLE: Style = Style::new().bg(ZINC.c700);
 const TEXT_FG_COLOR: Color = ZINC.c50;
 
 impl App {
+    pub const HEADLESS_ARG: &'static str = "--headless";
+
     pub fn run(mut self, terminal: &mut DefaultTerminal) -> Result<()> {
         while !self.should_exit {
             terminal.draw(|frame| frame.render_widget(&mut self, frame.area()))?;
@@ -276,12 +279,44 @@ impl App {
             }
             ActionType::StartHeadless => {
                 Command::new(std::env::current_exe()?)
-                    .arg("--headless")
+                    .arg(Self::HEADLESS_ARG)
                     .stdin(Stdio::piped())
                     .stdout(Stdio::piped())
                     .spawn()?;
 
                 self.should_exit = true;
+
+                Ok(())
+            }
+            ActionType::ToggleStartup => {
+                let startup_dir = dirs::template_dir()
+                    .unwrap()
+                    .parent()
+                    .unwrap()
+                    .join("Start Menu/Programs/Startup");
+
+                let startup_path = startup_dir.join("WiMLaM.vbs");
+
+                if !startup_path.exists() {
+                    fs::write(
+                        startup_path,
+                        format!(
+                            "CreateObject(\"Wscript.Shell\").Run \"{} {}\", 0, True",
+                            std::env::current_exe()?.to_string_lossy(),
+                            Self::HEADLESS_ARG
+                        ),
+                    )?;
+
+                    self.handle_action(ActionType::DisplayMessage(format!(
+                        "Successfully added app to opening on windows startup ",
+                    )))?;
+                } else {
+                    fs::remove_file(startup_path)?;
+
+                    self.handle_action(ActionType::DisplayMessage(format!(
+                        "Successfully removed app from opening on windows startup ",
+                    )))?;
+                }
 
                 Ok(())
             }

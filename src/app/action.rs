@@ -39,6 +39,8 @@ pub enum ActionType {
     GoBack,
     /// Starts a headless process of the app
     StartHeadless,
+    /// Toggle open on startup, force ?
+    ToggleStartup,
 }
 
 impl From<&Action> for ListItem<'_> {

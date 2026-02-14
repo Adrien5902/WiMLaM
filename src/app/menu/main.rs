@@ -37,6 +37,10 @@ impl Menu for MenuMain {
                     })),
                 ],
             },
+            Action {
+                name: String::from("⇄ Toggle open on windows startup"),
+                action_type: vec![ActionType::ToggleStartup],
+            },
         ]
     }
 }
