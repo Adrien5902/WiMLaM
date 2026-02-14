@@ -48,10 +48,10 @@ jobs:
           $target = "${{ matrix.target }}"
           $name = "${{ github.event.repository.name }}"
 
-          copy target/$target/release/$name.exe dist/
+          copy target/$target/release/$name.exe dist/$name-$target.exe
 
           Compress-Archive `
-            dist/$name-$target.exe `
+            dist/$name.exe `
             dist/$name-$target.zip `
             -Force
 
