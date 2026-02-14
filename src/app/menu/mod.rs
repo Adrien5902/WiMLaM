@@ -81,7 +81,7 @@ pub struct RenderedMenu {
 impl RenderedMenu {
     pub fn handle_key(&mut self, key: KeyEvent) -> Option<Vec<ActionType>> {
         match key.code {
-            KeyCode::Enter | KeyCode::Right => self.handle_selected_actions(),
+            KeyCode::Enter | KeyCode::Right | KeyCode::Char('l') => self.handle_selected_actions(),
             KeyCode::Char('j') | KeyCode::Down => {
                 self.state.select_next();
                 None

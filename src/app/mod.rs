@@ -220,7 +220,7 @@ impl App {
         } else if self.rendered_change_hotkey.is_some() {
             "Press Escape to cancel, Enter to confirm"
         } else {
-            "Use ←↓↑→ to move"
+            "Use ←↓↑→ or hjkl to move"
         })
         .centered()
         .render(area, buf);
