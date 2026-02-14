@@ -3,6 +3,24 @@
 version = 4
 
 [[package]]
+name = "WiMLaM"
+version = "0.1.0"
+dependencies = [
+ "clone_dyn",
+ "color-eyre",
+ "dirs",
+ "num_enum",
+ "once_cell",
+ "ratatui",
+ "serde",
+ "serde_json",
+ "sysinfo",
+ "thiserror 2.0.18",
+ "win-hotkeys",
+ "windows 0.62.2",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.25.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2197,24 +2215,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3949bd5b99cafdf1c7ca86b43ca564028dfe27d66958f2470940f73d86d75b37"
 dependencies = [
  "windows-link 0.2.1",
-]
-
-[[package]]
-name = "windows_monitor_layout"
-version = "0.1.0"
-dependencies = [
- "clone_dyn",
- "color-eyre",
- "dirs",
- "num_enum",
- "once_cell",
- "ratatui",
- "serde",
- "serde_json",
- "sysinfo",
- "thiserror 2.0.18",
- "win-hotkeys",
- "windows 0.62.2",
 ]
 
 [[package]]
