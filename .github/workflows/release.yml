@@ -24,34 +24,36 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          targets: |
+            x86_64-pc-windows-msvc
+            aarch64-pc-windows-msvc
 
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@v2
 
-      - name: Install cargo-wix
-        run: cargo install cargo-wix
+      # -------- tests ONLY x64 --------
+      - name: Run tests (x64 only)
+        if: matrix.target == 'x86_64-pc-windows-msvc'
+        run: cargo test --release --target x86_64-pc-windows-msvc
 
-      # ---------- tests ----------
-      - name: Run tests
-        run: cargo test --release --target ${{ matrix.target }}
-
-      # ---------- build exe ----------
+      # -------- build --------
       - name: Build binary
         run: cargo build --release --target ${{ matrix.target }}
 
-      # ---------- build MSI ----------
-      - name: Build MSI
-        run: cargo wix --target ${{ matrix.target }}
-
-      # ---------- collect artifacts ----------
-      - name: Prepare artifacts
+      # -------- package --------
+      - name: Package artifacts
         shell: pwsh
         run: |
           mkdir dist
 
-          copy target/${{ matrix.target }}/release/*.exe dist/
-          copy target/wix/*.msi dist/
+          $target = "${{ matrix.target }}"
+          $name = "${{ github.event.repository.name }}"
+
+          copy target/$target/release/$name.exe dist/
+
+          Compress-Archive `
+            dist/$name.exe `
+            dist/$name-$target.zip `
+            -Force
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -68,7 +70,7 @@ jobs:
         with:
           path: artifacts
 
-      - name: Create Release
+      - name: Publish Release
         uses: softprops/action-gh-release@v2
         with:
           files: artifacts/**/*
