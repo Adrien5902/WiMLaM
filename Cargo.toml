@@ -2,6 +2,7 @@
 name = "WiMLaM"
 version = "0.1.0"
 edition = "2024"
+authors = ["Adrien5902"]
 
 [dependencies]
 clone_dyn = "0.58.0"

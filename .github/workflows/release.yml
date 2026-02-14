@@ -1,0 +1,74 @@
+name: Build & Release Windows
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        target:
+          - x86_64-pc-windows-msvc
+          - aarch64-pc-windows-msvc
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-wix
+        run: cargo install cargo-wix
+
+      # ---------- tests ----------
+      - name: Run tests
+        run: cargo test --release --target ${{ matrix.target }}
+
+      # ---------- build exe ----------
+      - name: Build binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      # ---------- build MSI ----------
+      - name: Build MSI
+        run: cargo wix --target ${{ matrix.target }}
+
+      # ---------- collect artifacts ----------
+      - name: Prepare artifacts
+        shell: pwsh
+        run: |
+          mkdir dist
+
+          copy target/${{ matrix.target }}/release/*.exe dist/
+          copy target/wix/*.msi dist/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-${{ matrix.target }}
+          path: dist/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*
